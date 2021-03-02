@@ -1,4 +1,4 @@
-package uuuid
+package ugen
 
 import (
 	crand "crypto/rand"
@@ -10,6 +10,10 @@ import (
 	"strings"
 	"time"
 )
+
+var UUIDGen uuidGen
+
+type uuidGen struct{}
 
 // seeded indicates if math/rand has been seeded
 var seeded bool = false
@@ -41,7 +45,7 @@ func (this UUID) String() string {
 }
 
 // Rand generates a new version 4 UUID.
-func Rand() UUID {
+func (gen uuidGen) Rand() UUID {
 	var x [16]byte
 	randBytes(x[:])
 	x[6] = (x[6] & 0x0F) | 0x40
@@ -59,7 +63,7 @@ func Rand() UUID {
 // {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 //
 // If the string is not in one of these formats, it'll return an error.
-func FromStr(s string) (id UUID, err error) {
+func (gen uuidGen) FromStr(s string) (id UUID, err error) {
 	if s == "" {
 		err = errors.New("Empty string")
 		return
@@ -80,8 +84,8 @@ func FromStr(s string) (id UUID, err error) {
 
 // MustFromStr behaves similarly to FromStr except that it'll panic instead of
 // returning an error.
-func MustFromStr(s string) UUID {
-	id, err := FromStr(s)
+func (gen uuidGen) MustFromStr(s string) UUID {
+	id, err := gen.FromStr(s)
 	if err != nil {
 		panic(err)
 	}
