@@ -1,8 +1,9 @@
 package ugener
 
 import (
+	"crypto/rand"
 	"errors"
-	"math/rand"
+	"math/big"
 	"strconv"
 	"strings"
 	"sync"
@@ -85,6 +86,46 @@ func (w *Worker) GetStringHex() string {
 	return strconv.FormatInt(id, 16)
 }
 
+var srcLetters = []byte("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ=")
+
+func randomSecret() (secret []byte) {
+	tempLetters := make([]byte, len(srcLetters))
+	copy(tempLetters, srcLetters)
+	for len(tempLetters) > 0 {
+		pos, _ := rand.Int(rand.Reader, big.NewInt(int64(len(tempLetters))))
+		secret = append(secret, tempLetters[pos.Int64()])
+		tempLetters = append(tempLetters[:pos.Int64()], tempLetters[pos.Int64()+1:]...)
+	}
+	return
+}
+
+func (w *Worker) ConvToShort63(id int64) (output string) {
+	secret := randomSecret()
+	secretLen := int64(len(secret))
+	var outByte []byte
+	for id != 0 {
+		m := id % secretLen
+		outByte = append(outByte, secret[m])
+		id = (id - m) / secretLen
+	}
+	output = string(outByte)
+	return
+}
+
+func (w *Worker) Short63() (output string) {
+	secret := randomSecret()
+	id := w.GetId()
+	secretLen := int64(len(secret))
+	var outByte []byte
+	for id != 0 {
+		m := id % secretLen
+		outByte = append(outByte, secret[m])
+		id = (id - m) / secretLen
+	}
+	output = string(outByte)
+	return
+}
+
 // 实例化一个工作节点
 // workerId 为当前节点的id
 func NewWorker(workerId int64) (*Worker, error) {
@@ -101,7 +142,7 @@ func NewWorker(workerId int64) (*Worker, error) {
 }
 
 func RandomWorker() *Worker {
-	randomId := rand.Int63n(workerMax)
-	worker, _ := NewWorker(randomId)
+	randomId, _ := rand.Int(rand.Reader, big.NewInt(1024))
+	worker, _ := NewWorker(randomId.Int64())
 	return worker
 }
