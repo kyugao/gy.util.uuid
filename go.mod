@@ -1,3 +1,3 @@
-module github.com/kyugao/util.generator
+module gitee.com/kyugao/ugener
 
 go 1.14

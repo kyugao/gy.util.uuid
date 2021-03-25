@@ -1,9 +1,9 @@
-package ugen
+package ugener
 
 import "testing"
 
 func TestSnowflake(t *testing.T) {
-	t.Log(Snowflake.GetString())
+	t.Log(Snowflake.GetStringHex())
 }
 
 func TestHexSnowflake(t *testing.T) {

@@ -1,9 +1,10 @@
-package ugen
+package ugener
 
 import (
 	"errors"
 	"math/rand"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -72,6 +73,11 @@ func (w *Worker) GetId() int64 {
 func (w *Worker) GetString() string {
 	id := w.GetId()
 	return strconv.FormatInt(id, 10)
+}
+
+func (w *Worker) GetStringHexTrim() string {
+	id := w.GetStringHex()
+	return strings.TrimRight(id, "0")
 }
 
 func (w *Worker) GetStringHex() string {

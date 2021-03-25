@@ -1,4 +1,4 @@
-package ugen
+package ugener
 
 import (
 	crand "crypto/rand"
