@@ -4,8 +4,7 @@ import "testing"
 
 func TestSnowflake(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		id := RandomWorker().GetId()
-		output := Short63(id)
+		output := Snowflake.Short63()
 		t.Log(output)
 	}
 
